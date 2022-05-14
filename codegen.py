@@ -24,7 +24,7 @@ def generate_isa_header():
     # should not depend on whitespace in isa.yaml, ordering of instruction etc
     def calculate_isa_hash(instructions):
         # These properties matter when calculating ISA hash, in addition to the mnemonic    
-        hashable_properties = ['id', 'op', 'mask', 'length']
+        hashable_properties = ['op', 'mask', 'length']
 
         mnemonics_sorted = sorted(list(instructions.keys()))
 
@@ -60,12 +60,12 @@ def generate_isa_header():
     def instructions_to_defines(instructions):
         buffer = ''
 
-        for mnemonic in instructions:
+        for i, mnemonic in enumerate(instructions.keys()):
             props = instructions[mnemonic]
     
             buffer += ENTRY_FORMAT \
                 .replace('%MNEMONIC%', mnemonic) \
-                .replace('%ID%', hex(props['id'])) \
+                .replace('%ID%', str(i + 1)) \
                 .replace('%OP%', hex(props['op'])) \
                 .replace('%MASK%', hex(props['mask'])) \
                 .replace('%LENGTH%', str(props['length']))
