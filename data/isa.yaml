@@ -5,17 +5,8 @@
 # it is used to generate isa.h header file before building
 # decoding, encoding and implementation of each instruction has to be supplied manually
 
-INVALID:
-  name: "No Operation"
-  example_bytes: "<none>"
-  example_disasm: "<none>"
-  id: 0
-  op: 0x0
-  mask: 0x0
-  length: 0
-
 NOP:
-  name: "No Operation"
+  description: "No Operation"
   example_bytes: "[0x90]"
   example_disasm: "nop;"
   id: 1
@@ -24,7 +15,7 @@ NOP:
   length: 1
 
 JMPABS:
-  name: "Jump to Absolute address"
+  description: "Jump to Absolute address"
   example_bytes: "[0x91, 0x06, 0x00, 0x00, 0x00]"
   example_disasm: "jmpabs $0x6;"
   id: 2
@@ -33,7 +24,7 @@ JMPABS:
   length: 5
 
 PUSH:
-  name: "Push"
+  description: "Push"
   example_bytes: "[0x54]"
   example_disasm: "push %gpr4;"
   id: 3
@@ -42,7 +33,7 @@ PUSH:
   length: 1
 
 POP:
-  name: "Pop"
+  description: "Pop"
   example_bytes: "[0x64]"
   example_disasm: "pop %gpr4;"
   id: 4
@@ -51,7 +42,7 @@ POP:
   length: 1
 
 STI:
-  name: "Store Immediate"
+  description: "Store Immediate"
   example_bytes: "[0x72, 0xff, 0x00, 0x00, 0xdd]"
   example_disasm: "sti %gpr2, $0xdd0000ff;"
   id: 5
@@ -60,7 +51,7 @@ STI:
   length: 5
 
 MOV:
-  name: "Move from Register to Register"
+  description: "Move from Register to Register"
   example_bytes: "[0xc0, 0x17]"
   example_disasm: "mov %gpr1, %gpr7;"
   id: 6
@@ -69,7 +60,7 @@ MOV:
   length: 2
 
 XOR:
-  name: "Calculate XOR of dst and src, store result in dst"
+  description: "Calculate XOR of dst and src, store result in dst"
   example_bytes: "[0xa0, 0x17]"
   example_disasm: "xor %gpr1, %gpr7;"
   id: 7
@@ -78,7 +69,7 @@ XOR:
   length: 2
 
 ADD:
-  name: "Add src to dst and store in dst (with carry)"
+  description: "Add src to dst and store in dst (with carry)"
   example_bytes: "[0xa1, 0x17]"
   example_disasm: "add %gpr1, %gpr7;"
   id: 8

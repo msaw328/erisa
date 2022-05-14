@@ -7,7 +7,7 @@
 #include <string.h>
 
 #include "registers.h"
-#include "isa.h"
+#include "instructions.h"
 
 void fetch(uint8_t* decode_buff, uint8_t* mem, regs_t* regs) {
     memcpy(decode_buff, mem + regs->ipr, DECODE_BUFFER_LEN);
