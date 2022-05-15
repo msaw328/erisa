@@ -32,6 +32,7 @@ void fetch(uint8_t* decode_buff, erisa_vm_t* vm) {
 int main() {
     erisa_vm_t vm;
     erisa_vm_init(&vm, RAM_SIZE);
+    memcpy(vm.memory, ram, RAM_SIZE);
     vm.registers.spr = STACK_TOP;
 
     uint8_t decode_buffer[ERISA_BYTECODE_BUFFER_LEN] = { 0 };
@@ -40,6 +41,7 @@ int main() {
 
     while(1) {
         erisa_vm_dump_regs(&vm);
+        getc(stdin);
 
         // Fetch instruction
         fetch(decode_buffer, &vm);

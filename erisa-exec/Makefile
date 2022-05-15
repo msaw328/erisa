@@ -1,7 +1,8 @@
 .PHONY: all clear
 .DEFAULT_GOAL := all
 
-BUILD_DIR := ../build/erisa-exec
+# BUILD_DIR_ROOT from top level make
+BUILD_DIR := $(BUILD_DIR_ROOT)/erisa-exec
 
 all: $(BUILD_DIR)/erisa-exec
 
@@ -15,22 +16,17 @@ SRC := $(addprefix src/, $(SRC))
 OBJ := $(patsubst src/%.c,$(BUILD_DIR)/%.o, $(SRC))
 DEP := $(patsubst src/%.c,$(BUILD_DIR)/%.d, $(SRC))
 
-CFLAGS := -Wall -Wextra -Werror -Wno-unused -pedantic -std=c99 -ffile-prefix-map=./=/ -I../liberisa/include
-
 include $(DEP)
 
 # Each dependency file is generated from the source file
 $(BUILD_DIR)/%.d: src/%.c
-	@echo -e "[DEP] $@"
+	@echo -e "[DEP] $(subst $(BUILD_DIR)/,,$@)"
 	@$(CC) -MM -MT $(patsubst src/%.c,$(BUILD_DIR)/%.o, $<) $< > $@
 
 $(BUILD_DIR)/%.o: src/%.c
-	@echo -e "[CC] $@"
+	@echo -e "[CC] $(subst $(BUILD_DIR)/,,$@)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/erisa-exec: $(OBJ)
-	@echo -e "[LD] $@"
-	@$(CC) -L../build/liberisa -lerisa $(CFLAGS) $^ -o $@
-
-clear:
-	@echo no cleaning
+	@echo -e "[LD] $(subst $(BUILD_DIR)/,,$@)"
+	@$(CC) -L$(BUILD_DIR_ROOT)/liberisa/ -lerisa $(CFLAGS) $^ -o $@
