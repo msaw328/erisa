@@ -2,10 +2,10 @@
 // Copyright (C) 2022  Maciej Sawka maciejsawka@gmail.com, msaw328@kretes.xyz
 
 #include <stdint.h>
+#include <string.h>
 #include <stdio.h>
 
-#include "registers.h"
-#include "pipeline.h"
+#include <erisa/erisa.h>
 
 #define RAM_SIZE (1 << 12)
 #define STACK_TOP (RAM_SIZE) // Start stack at the very top
@@ -25,29 +25,33 @@ uint8_t ram[RAM_SIZE] = {
     0x91, 0x14, 0x00, 0x00, 0x00    // 0x001a: jmpabs $0x14;        // This loops infinitely!
 };
 
+void fetch(uint8_t* decode_buff, uint8_t* mem, regs_t* regs) {
+    memcpy(decode_buff, mem + regs->ipr, ERISA_BYTECODE_BUFFER_LEN);
+}
+
 int main() {
     regs_t regs;
-    init_regs(&regs, STACK_TOP);
+    erisa_vm_init_regs(&regs, STACK_TOP);
 
-    uint8_t decode_buffer[DECODE_BUFFER_LEN] = { 0 };
+    uint8_t decode_buffer[ERISA_BYTECODE_BUFFER_LEN] = { 0 };
     ins_t decoded_instruction = { 0 };
     size_t next_ins = 0;
 
     while(1) {
-        dump_regs(&regs);
+        erisa_vm_dump_regs(&regs);
 
         // Fetch instruction
         fetch(decode_buffer, ram, &regs);
 
-        for(size_t i = 0; i < DECODE_BUFFER_LEN; i++) {
+        for(size_t i = 0; i < ERISA_BYTECODE_BUFFER_LEN; i++) {
             printf("0x%02x%c %c", decode_buffer[i],
-                i == DECODE_BUFFER_LEN - 1 ? ' ' : ',',
-                i == DECODE_BUFFER_LEN - 1 ? '\n' : ' '
+                i == ERISA_BYTECODE_BUFFER_LEN - 1 ? ' ' : ',',
+                i == ERISA_BYTECODE_BUFFER_LEN - 1 ? '\n' : ' '
             );
         }
 
         // Try to decode
-        next_ins = decode(decode_buffer, &decoded_instruction);
+        next_ins = erisa_decode(decode_buffer, &decoded_instruction);
 
         // Check if valid
         if(next_ins == 0) {
@@ -59,6 +63,6 @@ int main() {
         regs.ipr += next_ins;
 
         // Execute
-        execute(&decoded_instruction, &regs, ram);
+        erisa_vm_execute(&decoded_instruction, &regs, ram);
     }
 }

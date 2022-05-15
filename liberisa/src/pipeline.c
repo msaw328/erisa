@@ -1,25 +1,20 @@
 // ERISA - Embeddable Reduced Instruction Set Architecture
 // Copyright (C) 2022  Maciej Sawka maciejsawka@gmail.com, msaw328@kretes.xyz
 
-#include "pipeline.h"
-
 #include <stdint.h>
 #include <string.h>
 
-#include "registers.h"
+#include <erisa/erisa.h>
+
 #include "instructions.h"
 
-void fetch(uint8_t* decode_buff, uint8_t* mem, regs_t* regs) {
-    memcpy(decode_buff, mem + regs->ipr, DECODE_BUFFER_LEN);
-}
-
-size_t decode(uint8_t* buff, ins_t* result) {
+size_t erisa_decode(uint8_t* buff, ins_t* result) {
     uint8_t op = buff[0];
 
     if(INS_MATCH(op, STI)) {
         result->id = INS_ID_STI; // Its a Store Immediate
-        result->src = *((uint32_t*) (buff + 1)); // src -> imm32
-        result->dst = op & ~INS_OP_MASK_STI; // dst -> reg_id
+        result->operands[0] = *((uint32_t*) (buff + 1)); // src -> imm32
+        result->operands[1] = op & ~INS_OP_MASK_STI; // dst -> reg_id
         return INS_LEN_STI;
 
     } else if(INS_MATCH(op, NOP)) {
@@ -28,35 +23,35 @@ size_t decode(uint8_t* buff, ins_t* result) {
 
     } else if(INS_MATCH(op, JMPABS)) {
         result->id = INS_ID_JMPABS; // Its a Jump Absolute
-        result->dst = *((uint32_t*) (buff + 1)); // dst -> abs
+        result->operands[0] = *((uint32_t*) (buff + 1)); // dst -> abs
         return INS_LEN_JMPABS;
 
     } else if(INS_MATCH(op, PUSH)) {
         result->id = INS_ID_PUSH; // Its a Push
-        result->src = op & ~INS_OP_MASK_PUSH; // src -> reg_id
+        result->operands[0] = op & ~INS_OP_MASK_PUSH; // src -> reg_id
         return INS_LEN_PUSH;
 
     } else if(INS_MATCH(op, POP)) {
         result->id = INS_ID_POP; // Its a Pop
-        result->dst = op & ~INS_OP_MASK_POP; // dst -> reg_id
+        result->operands[0] = op & ~INS_OP_MASK_POP; // dst -> reg_id
         return INS_LEN_POP;
 
     } else if(INS_MATCH(op, MOV)) {
         result->id = INS_ID_MOV; // Its a Mov
-        result->src = (uint32_t) (buff[1] & 0x0f);
-        result->dst = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[0] = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[1] = (uint32_t) (buff[1] & 0x0f);
         return INS_LEN_MOV;
 
     } else if(INS_MATCH(op, XOR)) {
         result->id = INS_ID_XOR; // Its a Xor
-        result->src = (uint32_t) (buff[1] & 0x0f);
-        result->dst = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[0] = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[1] = (uint32_t) (buff[1] & 0x0f);
         return INS_LEN_XOR;
 
     } else if(INS_MATCH(op, ADD)) {
         result->id = INS_ID_ADD; // Its a Add
-        result->src = (uint32_t) (buff[1] & 0x0f);
-        result->dst = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[0] = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[1] = (uint32_t) (buff[1] & 0x0f);
         return INS_LEN_ADD;
 
     }
@@ -68,8 +63,8 @@ size_t decode(uint8_t* buff, ins_t* result) {
 
 // Store Immediate: src - imm32, dst - reg_id
 void __execute_sti(ins_t* ins, regs_t* regs, uint8_t* mem) {
-    uint32_t imm_src = ins->src;
-    uint32_t reg_id = ins->dst;
+    uint32_t imm_src = ins->operands[0];
+    uint32_t reg_id = ins->operands[1];
 
     regs->gpr[reg_id] = imm_src;
 }
@@ -81,13 +76,13 @@ void __execute_nop(ins_t* ins, regs_t* regs, uint8_t* mem) {
 
 // Jump Absolute - dst - addr
 void __execute_jmpabs(ins_t* ins, regs_t* regs, uint8_t* mem) {
-    uint32_t abs_addr = ins->dst;
+    uint32_t abs_addr = ins->operands[0];
     regs->ipr = abs_addr;
 }
 
 // Push - src - reg_id
 void __execute_push(ins_t* ins, regs_t* regs, uint8_t* mem) {
-    uint32_t reg_id = ins->src;
+    uint32_t reg_id = ins->operands[0];
 
     regs->spr -= sizeof(uint32_t);
 
@@ -97,7 +92,7 @@ void __execute_push(ins_t* ins, regs_t* regs, uint8_t* mem) {
 
 // Pop - dst - reg_id
 void __execute_pop(ins_t* ins, regs_t* regs, uint8_t* mem) {
-    uint32_t reg_id = ins->dst;
+    uint32_t reg_id = ins->operands[0];
 
     uint32_t* spr32 = (uint32_t*) (mem + regs->spr);
     regs->gpr[reg_id] = *spr32;
@@ -107,8 +102,8 @@ void __execute_pop(ins_t* ins, regs_t* regs, uint8_t* mem) {
 
 // Mov - dst - reg_id, src - reg_id
 void __execute_mov(ins_t* ins, regs_t* regs, uint8_t* mem) {
-    uint32_t dst_id = ins->dst;
-    uint32_t src_id = ins->src;
+    uint32_t dst_id = ins->operands[0];
+    uint32_t src_id = ins->operands[1];
 
     regs->gpr[dst_id] = regs->gpr[src_id];
 }
@@ -116,8 +111,8 @@ void __execute_mov(ins_t* ins, regs_t* regs, uint8_t* mem) {
 // Xor - dst - reg_id, src - reg_id
 void __execute_xor(ins_t* ins, regs_t* regs, uint8_t* mem) {
     regs->flagr = 0;
-    uint32_t dst_id = ins->dst;
-    uint32_t src_id = ins->src;
+    uint32_t dst_id = ins->operands[0];
+    uint32_t src_id = ins->operands[1];
 
     regs->gpr[dst_id] ^= regs->gpr[src_id];
 
@@ -129,8 +124,8 @@ void __execute_xor(ins_t* ins, regs_t* regs, uint8_t* mem) {
 // Add - dst - reg_id, src - reg_id
 void __execute_add(ins_t* ins, regs_t* regs, uint8_t* mem) {
     regs->flagr = 0;
-    uint32_t dst_id = ins->dst;
-    uint32_t src_id = ins->src;
+    uint32_t dst_id = ins->operands[0];
+    uint32_t src_id = ins->operands[1];
 
     uint32_t overflow_guard = 0xffffffff;
     uint32_t dst_val = regs->gpr[dst_id];
@@ -161,6 +156,6 @@ static __ins_execute_t* _ins_id_exec_map[] = {
     [INS_ID_ADD] = __execute_add,
 };
 
-void execute(ins_t* ins, regs_t* regs, uint8_t* mem) {
+void erisa_vm_execute(ins_t* ins, regs_t* regs, uint8_t* mem) {
     _ins_id_exec_map[ins->id](ins, regs, mem);
 }

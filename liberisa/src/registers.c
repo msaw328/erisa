@@ -1,18 +1,18 @@
 // ERISA - Embeddable Reduced Instruction Set Architecture
 // Copyright (C) 2022  Maciej Sawka maciejsawka@gmail.com, msaw328@kretes.xyz
 
-#include "registers.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
-void init_regs(regs_t* r, uint32_t spr) {
+#include <erisa/erisa.h>
+
+void erisa_vm_init_regs(regs_t* r, uint32_t spr) {
     memset(r, 0, sizeof(regs_t));
     r->spr = spr;
 }
 
-void dump_regs(regs_t* r) {
+void erisa_vm_dump_regs(regs_t* r) {
     printf("regs state: (size with padding: %zu bytes) {\n", sizeof(regs_t));
 
     printf("\tflagr -> |%c%c|\n\n",
@@ -21,7 +21,7 @@ void dump_regs(regs_t* r) {
     );
     puts("\t<reg> <hex> (u|d)");
 
-    for(int i = 0; i < GPR_NUM; i++) {
+    for(int i = 0; i < ERISA_VM_GPR_NUM; i++) {
         printf("\tgpr%2d -> |%08x| (%u|%d)\n", i, r->gpr[i], r->gpr[i], (int32_t) r->gpr[i]);
     }
     printf("\tretr  -> |%08x| (%u|%d)\n", r->retr, r->retr, (int32_t) r->retr);
