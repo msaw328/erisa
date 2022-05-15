@@ -1,6 +1,6 @@
 ## ERISA - Embeddable Reduced Instruction Set Architecture
 
-Current state of the project: very much a prototype. ISA is completely unstable, very few instructions are actually implemented (see [the YAML](data/isa.yaml) for the whole list).
+Current state of the project: very much a prototype. ISA is completely unstable, very few instructions are actually implemented (see [the YAML](liberisa/data/isa.yaml) for the whole list).
 
 ERISA consists of:
  - Assembly-like language
