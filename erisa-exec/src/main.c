@@ -25,23 +25,24 @@ uint8_t ram[RAM_SIZE] = {
     0x91, 0x14, 0x00, 0x00, 0x00    // 0x001a: jmpabs $0x14;        // This loops infinitely!
 };
 
-void fetch(uint8_t* decode_buff, uint8_t* mem, regs_t* regs) {
-    memcpy(decode_buff, mem + regs->ipr, ERISA_BYTECODE_BUFFER_LEN);
+void fetch(uint8_t* decode_buff, erisa_vm_t* vm) {
+    memcpy(decode_buff, vm->memory + vm->registers.ipr, ERISA_BYTECODE_BUFFER_LEN);
 }
 
 int main() {
-    regs_t regs;
-    erisa_vm_init_regs(&regs, STACK_TOP);
+    erisa_vm_t vm;
+    erisa_vm_init(&vm, RAM_SIZE);
+    vm.registers.spr = STACK_TOP;
 
     uint8_t decode_buffer[ERISA_BYTECODE_BUFFER_LEN] = { 0 };
-    ins_t decoded_instruction = { 0 };
+    erisa_ins_t decoded_instruction = { 0 };
     size_t next_ins = 0;
 
     while(1) {
-        erisa_vm_dump_regs(&regs);
+        erisa_vm_dump_regs(&vm);
 
         // Fetch instruction
-        fetch(decode_buffer, ram, &regs);
+        fetch(decode_buffer, &vm);
 
         for(size_t i = 0; i < ERISA_BYTECODE_BUFFER_LEN; i++) {
             printf("0x%02x%c %c", decode_buffer[i],
@@ -60,9 +61,9 @@ int main() {
         }
 
         // Increment instruction pointer before execution, in case its a jump
-        regs.ipr += next_ins;
+        vm.registers.ipr += next_ins;
 
         // Execute
-        erisa_vm_execute(&decoded_instruction, &regs, ram);
+        erisa_vm_execute(&decoded_instruction, &vm);
     }
 }

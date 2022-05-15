@@ -6,7 +6,7 @@ BUILD_DIR := ../build/liberisa
 all: $(BUILD_DIR)/liberisa.so
 
 # Source files
-SRC := pipeline.c registers.c
+SRC := encoding.c execution.c vm.c
 
 # Generated source files
 GEN_SRC := isa.h

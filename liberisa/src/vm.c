@@ -4,16 +4,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <erisa/erisa.h>
 
-void erisa_vm_init_regs(regs_t* r, uint32_t spr) {
-    memset(r, 0, sizeof(regs_t));
-    r->spr = spr;
+void erisa_vm_init(erisa_vm_t* vm, size_t memory_size) {
+    memset(&(vm->registers), 0, sizeof(erisa_regs_t));
+
+    vm->memory = malloc(memory_size);
+    vm->memory_size = memory_size;
 }
 
-void erisa_vm_dump_regs(regs_t* r) {
-    printf("regs state: (size with padding: %zu bytes) {\n", sizeof(regs_t));
+void erisa_vm_dump_regs(erisa_vm_t* vm) {
+    erisa_regs_t* r = &(vm->registers);
+    printf("regs state: (size with padding: %zu bytes) {\n", sizeof(erisa_regs_t));
 
     printf("\tflagr -> |%c%c|\n\n",
         FLAG_IS_SET(r->flagr, FLAG_BIT_CARRY) ? 'C' : '-',
