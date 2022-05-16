@@ -18,13 +18,16 @@ def generate_isa_header():
                     '#define INS_ID_%MNEMONIC% %ID%\n'
                     '#define INS_OP_%MNEMONIC% %OP%\n'
                     '#define INS_OP_MASK_%MNEMONIC% %MASK%\n'
-                    '#define INS_LEN_%MNEMONIC% %LENGTH%\n\n')
+                    '#define INS_LEN_%MNEMONIC% %LENGTH%\n'
+                    '#define INS_STR_%MNEMONIC% %STR%\n')
+
+    OPERAND_ENTRY_FORMAT = ('#define INS_OPERAND_%MNEMONIC%_%OPERAND% %OPERAND_ID%\n')
 
     # Calculates a hash digest of the ISA, which should be deterministic and
     # should not depend on whitespace in isa.yaml, ordering of instruction etc
     def calculate_isa_hash(instructions):
         # These properties matter when calculating ISA hash, in addition to the mnemonic    
-        hashable_properties = ['op', 'mask', 'length']
+        hashable_properties = ['op', 'mask', 'length', 'operands']
 
         mnemonics_sorted = sorted(list(instructions.keys()))
 
@@ -36,11 +39,28 @@ def generate_isa_header():
             buffer += str(mnemonic) + ':'
 
             for prop_idx in range(0, len(hashable_properties)):
-                prop = hashable_properties[prop_idx]
+                prop_name = hashable_properties[prop_idx]
 
-                buffer += str(instructions[mnemonic][prop]) + ':'
+                prop = instructions[mnemonic][prop_name]
 
-        return sha256(buffer.encode('ascii')).hexdigest()
+                if type(prop) == str:
+                    buffer += prop
+                elif type(prop) == list:
+                    buffer += prop_name + '[' + ':'.join([ str(x) for x in prop ]) + ']'
+                else:
+                    buffer += str(prop)
+
+                buffer += ':'
+
+            buffer += ':'
+
+        print('ISA_STRING: ' + buffer)
+
+        result_hash = sha256(buffer.encode('ascii')).hexdigest()
+
+        print('ISA_HASH: ' + result_hash)
+
+        return result_hash
 
 
     def hash_to_defines(hash_hex):
@@ -68,7 +88,18 @@ def generate_isa_header():
                 .replace('%ID%', str(i + 1)) \
                 .replace('%OP%', hex(props['op'])) \
                 .replace('%MASK%', hex(props['mask'])) \
-                .replace('%LENGTH%', str(props['length']))
+                .replace('%LENGTH%', str(props['length'])) \
+                .replace('%STR%', '"' + mnemonic.lower() + '"')
+
+            buffer += '\n'
+
+            for operand_i, operand in enumerate(props['operands']):
+                buffer += OPERAND_ENTRY_FORMAT \
+                    .replace('%MNEMONIC%', mnemonic) \
+                    .replace('%OPERAND%', operand.upper()) \
+                    .replace('%OPERAND_ID%', str(operand_i))
+
+            buffer += '\n'
 
         return buffer.strip()
 

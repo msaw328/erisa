@@ -2,7 +2,7 @@
 ERISA_LIB := build/liberisa/liberisa.so
 
 # Binaries
-ERISA_BINS := build/erisa-exec/erisa-exec
+ERISA_BINS := build/erisa-exec/erisa-exec build/erisa-disasm/erisa-disasm
 
 .PHONY: all clear $(ERISA_LIB) $(ERISA_BINS)
 .DEFAULT_GOAL := all
@@ -17,10 +17,10 @@ export BUILD_DIR_ROOT := $(abspath $(BUILD_DIR_REL))
 
 # Main C compiler flags - all binaries need public liberisa headers, including the library itself
 # Submakes may append to those flags as necessary
-export CFLAGS := -Wall -Wextra -Werror -Wno-unused -pedantic -std=c99 -ffile-prefix-map=./=/ -I$(abspath ./liberisa/include)
+export CFLAGS := -Wall -Wextra -Werror -Wno-unused -Wno-unused-parameter -pedantic -std=c99 -ffile-prefix-map=./=/ -I$(abspath ./liberisa/include)
 
 build:
-	mkdir -p $(BUILD_DIR_ROOT)/liberisa $(BUILD_DIR_ROOT)/erisa-exec/
+	mkdir -p $(BUILD_DIR_ROOT)/liberisa $(BUILD_DIR_ROOT)/erisa-exec/ $(BUILD_DIR_ROOT)/erisa-disasm/
 
 clear:
 	@echo -e "[RM] $(BUILD_DIR_REL)"
@@ -32,3 +32,6 @@ build/liberisa/liberisa.so: build
 
 build/erisa-exec/erisa-exec: build
 	@$(MAKE) -C erisa-exec
+
+build/erisa-disasm/erisa-disasm: build
+	@$(MAKE) -C erisa-disasm

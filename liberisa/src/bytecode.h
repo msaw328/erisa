@@ -9,6 +9,7 @@
 
 // ID equal to 0 means an invalid instruction
 #define INS_ID_INVALID 0x0
+#define INS_STR_INVALID "<invalid>"
 
 // Defines for each instruction
 // INS_ID_<ins>         - ID of the instruction (it is not encoded in machine code, just internal identification of instructions)

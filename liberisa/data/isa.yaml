@@ -12,6 +12,7 @@ NOP:
   op: 0x90
   mask: 0xff
   length: 1
+  operands: []
 
 JMPABS:
   description: "Jump to Absolute address"
@@ -20,6 +21,7 @@ JMPABS:
   op: 0x91
   mask: 0xff
   length: 5
+  operands: [addr]
 
 PUSH:
   description: "Push"
@@ -28,6 +30,7 @@ PUSH:
   op: 0x50
   mask: 0xf0
   length: 1
+  operands: [src]
 
 POP:
   description: "Pop"
@@ -36,6 +39,7 @@ POP:
   op: 0x60
   mask: 0xf0
   length: 1
+  operands: [dst]
 
 STI:
   description: "Store Immediate"
@@ -44,6 +48,7 @@ STI:
   op: 0x70
   mask: 0xf0
   length: 5
+  operands: [dst, imm]
 
 MOV:
   description: "Move from Register to Register"
@@ -52,6 +57,7 @@ MOV:
   op: 0xc0
   mask: 0xff
   length: 2
+  operands: [dst, src]
 
 XOR:
   description: "Calculate XOR of dst and src, store result in dst"
@@ -60,6 +66,7 @@ XOR:
   op: 0xa0
   mask: 0xff
   length: 2
+  operands: [dst, src]
 
 ADD:
   description: "Add src to dst and store in dst (with carry)"
@@ -68,3 +75,4 @@ ADD:
   op: 0xa1
   mask: 0xff
   length: 2
+  operands: [dst, src]

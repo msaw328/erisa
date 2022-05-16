@@ -10,8 +10,8 @@
 
 // Store Immediate: src - imm32, dst - reg_id
 void __execute_sti(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
-    uint32_t imm_src = ins->operands[0];
-    uint32_t reg_id = ins->operands[1];
+    uint32_t imm_src = ins->operands[INS_OPERAND_STI_IMM];
+    uint32_t reg_id = ins->operands[INS_OPERAND_STI_DST];
 
     regs->gpr[reg_id] = imm_src;
 }
@@ -23,13 +23,13 @@ void __execute_nop(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
 
 // Jump Absolute - dst - addr
 void __execute_jmpabs(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
-    uint32_t abs_addr = ins->operands[0];
+    uint32_t abs_addr = ins->operands[INS_OPERAND_JMPABS_ADDR];
     regs->ipr = abs_addr;
 }
 
 // Push - src - reg_id
 void __execute_push(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
-    uint32_t reg_id = ins->operands[0];
+    uint32_t reg_id = ins->operands[INS_OPERAND_PUSH_SRC];
 
     regs->spr -= sizeof(uint32_t);
 
@@ -39,7 +39,7 @@ void __execute_push(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
 
 // Pop - dst - reg_id
 void __execute_pop(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
-    uint32_t reg_id = ins->operands[0];
+    uint32_t reg_id = ins->operands[INS_OPERAND_POP_DST];
 
     uint32_t* spr32 = (uint32_t*) (mem + regs->spr);
     regs->gpr[reg_id] = *spr32;
@@ -49,8 +49,8 @@ void __execute_pop(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
 
 // Mov - dst - reg_id, src - reg_id
 void __execute_mov(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
-    uint32_t dst_id = ins->operands[0];
-    uint32_t src_id = ins->operands[1];
+    uint32_t dst_id = ins->operands[INS_OPERAND_MOV_DST];
+    uint32_t src_id = ins->operands[INS_OPERAND_MOV_SRC];
 
     regs->gpr[dst_id] = regs->gpr[src_id];
 }
@@ -58,8 +58,8 @@ void __execute_mov(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
 // Xor - dst - reg_id, src - reg_id
 void __execute_xor(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
     regs->flagr = 0;
-    uint32_t dst_id = ins->operands[0];
-    uint32_t src_id = ins->operands[1];
+    uint32_t dst_id = ins->operands[INS_OPERAND_XOR_DST];
+    uint32_t src_id = ins->operands[INS_OPERAND_XOR_SRC];
 
     regs->gpr[dst_id] ^= regs->gpr[src_id];
 
@@ -71,8 +71,8 @@ void __execute_xor(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
 // Add - dst - reg_id, src - reg_id
 void __execute_add(erisa_ins_t* ins, erisa_regs_t* regs, uint8_t* mem) {
     regs->flagr = 0;
-    uint32_t dst_id = ins->operands[0];
-    uint32_t src_id = ins->operands[1];
+    uint32_t dst_id = ins->operands[INS_OPERAND_ADD_DST];
+    uint32_t src_id = ins->operands[INS_OPERAND_ADD_SRC];
 
     uint32_t overflow_guard = 0xffffffff;
     uint32_t dst_val = regs->gpr[dst_id];

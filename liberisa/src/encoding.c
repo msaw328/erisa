@@ -8,55 +8,63 @@
 
 #include "bytecode.h"
 
-size_t erisa_decode(uint8_t* buff, erisa_ins_t* result) {
+void erisa_decode(uint8_t* buff, erisa_ins_t* result) {
     uint8_t op = buff[0];
 
     if(INS_MATCH(op, STI)) {
         result->id = INS_ID_STI; // Its a Store Immediate
-        result->operands[0] = *((uint32_t*) (buff + 1)); // src -> imm32
-        result->operands[1] = op & ~INS_OP_MASK_STI; // dst -> reg_id
-        return INS_LEN_STI;
+        result->operands[INS_OPERAND_STI_IMM] = *((uint32_t*) (buff + 1)); // src -> imm32
+        result->operands[INS_OPERAND_STI_DST] = op & ~INS_OP_MASK_STI; // dst -> reg_id
+        result->length = INS_LEN_STI;
+        return;
 
     } else if(INS_MATCH(op, NOP)) {
         result->id = INS_ID_NOP; // Its a No Operation
-        return INS_LEN_NOP;
+        result->length = INS_LEN_NOP;
+        return;
 
     } else if(INS_MATCH(op, JMPABS)) {
         result->id = INS_ID_JMPABS; // Its a Jump Absolute
-        result->operands[0] = *((uint32_t*) (buff + 1)); // dst -> abs
-        return INS_LEN_JMPABS;
+        result->operands[INS_OPERAND_JMPABS_ADDR] = *((uint32_t*) (buff + 1)); // dst -> abs
+        result->length = INS_LEN_JMPABS;
+        return;
 
     } else if(INS_MATCH(op, PUSH)) {
         result->id = INS_ID_PUSH; // Its a Push
-        result->operands[0] = op & ~INS_OP_MASK_PUSH; // src -> reg_id
-        return INS_LEN_PUSH;
+        result->operands[INS_OPERAND_PUSH_SRC] = op & ~INS_OP_MASK_PUSH; // src -> reg_id
+        result->length = INS_LEN_PUSH;
+        return;
 
     } else if(INS_MATCH(op, POP)) {
         result->id = INS_ID_POP; // Its a Pop
-        result->operands[0] = op & ~INS_OP_MASK_POP; // dst -> reg_id
-        return INS_LEN_POP;
+        result->operands[INS_OPERAND_POP_DST] = op & ~INS_OP_MASK_POP; // dst -> reg_id
+        result->length = INS_LEN_POP;
+        return;
 
     } else if(INS_MATCH(op, MOV)) {
         result->id = INS_ID_MOV; // Its a Mov
-        result->operands[0] = (uint32_t) ((buff[1] >> 4) & 0x0f);
-        result->operands[1] = (uint32_t) (buff[1] & 0x0f);
-        return INS_LEN_MOV;
+        result->operands[INS_OPERAND_MOV_DST] = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[INS_OPERAND_MOV_SRC] = (uint32_t) (buff[1] & 0x0f);
+        result->length = INS_LEN_MOV;
+        return;
 
     } else if(INS_MATCH(op, XOR)) {
         result->id = INS_ID_XOR; // Its a Xor
-        result->operands[0] = (uint32_t) ((buff[1] >> 4) & 0x0f);
-        result->operands[1] = (uint32_t) (buff[1] & 0x0f);
-        return INS_LEN_XOR;
+        result->operands[INS_OPERAND_XOR_DST] = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[INS_OPERAND_XOR_SRC] = (uint32_t) (buff[1] & 0x0f);
+        result->length = INS_LEN_XOR;
+        return;
 
     } else if(INS_MATCH(op, ADD)) {
         result->id = INS_ID_ADD; // Its a Add
-        result->operands[0] = (uint32_t) ((buff[1] >> 4) & 0x0f);
-        result->operands[1] = (uint32_t) (buff[1] & 0x0f);
-        return INS_LEN_ADD;
+        result->operands[INS_OPERAND_ADD_DST] = (uint32_t) ((buff[1] >> 4) & 0x0f);
+        result->operands[INS_OPERAND_ADD_SRC] = (uint32_t) (buff[1] & 0x0f);
+        result->length = INS_LEN_ADD;
+        return;
 
     }
 
     // Invalid instruction
     result->id = INS_ID_INVALID;
-    return 0;
+    result->length = 0;
 }

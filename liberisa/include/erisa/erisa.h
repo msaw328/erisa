@@ -5,6 +5,7 @@
 #define _ERISA_PUBLIC_H_
 
 #include <stdint.h>
+#include <sys/types.h>
 
 // Public header for the liberisa
 
@@ -14,6 +15,7 @@
 struct erisa_ins_t {
     uint32_t id;            // Instruction id from isa.h
     uint32_t operands[2];   // Operands may be either a register id or an immediate, address or offset up to 32 bits
+    size_t length;          // Length of the instruction in bytes
 };
 typedef struct erisa_ins_t erisa_ins_t;
 
@@ -26,9 +28,18 @@ typedef struct erisa_ins_t erisa_ins_t;
 #define ERISA_BYTECODE_BUFFER_LEN 8
 
 // Decodes bytes present in the decode_buffer into a single instruction
-// Returns number of succesfully decoded bytes, or 0 if invalid instruction found
-size_t erisa_decode(uint8_t* decode_buffer, erisa_ins_t* result);
+void erisa_decode(uint8_t* decode_buffer, erisa_ins_t* result);
 
+//
+// Assembly/Disassembly
+//
+
+// Length of the recommended instruction string buffer when disassembling
+#define ERISA_DISASM_BUFFER_LEN 64
+
+// Convert ins instruction to string in str_buff
+// Returns 0 if buffer too short, or number of bytes written to the buffer otherwise
+size_t erisa_disasm(erisa_ins_t* ins, char* str_buff, size_t buff_size);
 
 //
 // Instruction execution (VM)
@@ -70,6 +81,14 @@ typedef struct erisa_vm_t erisa_vm_t;
 // All registers are initialized to 0
 // RAM is allocated dynamically
 void erisa_vm_init(erisa_vm_t*, size_t memory_size);
+
+// Loads bytecode from a buffer
+// returns size on success, other values on failure (RAM too small to fit firmware)
+ssize_t erisa_vm_load_firmware_buffer(erisa_vm_t*, uint8_t* bytecode, size_t bytecode_size);
+
+// Loads bytecode from a file
+// returns size loaded on success, negative value on failure
+ssize_t erisa_vm_load_firmware_file(erisa_vm_t* vm, char* filename);
 
 // Dumps registers to stdout
 void erisa_vm_dump_regs(erisa_vm_t*);

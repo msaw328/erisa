@@ -6,6 +6,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include <erisa/erisa.h>
 
 void erisa_vm_init(erisa_vm_t* vm, size_t memory_size) {
@@ -33,4 +37,41 @@ void erisa_vm_dump_regs(erisa_vm_t* vm) {
     printf("\tipr   -> |%08x| (%u|%d)\n", r->ipr, r->ipr, (int32_t) r->ipr);
 
     puts("}");
+}
+
+ssize_t erisa_vm_load_firmware_buffer(erisa_vm_t* vm, uint8_t* bytecode, size_t bytecode_size) {
+    if(vm->memory_size < bytecode_size) return -1;
+
+    memset(vm->memory, 0, vm->memory_size); // Clear memory first
+    memcpy(vm->memory, bytecode, bytecode_size);
+
+    return bytecode_size;
+}
+
+ssize_t erisa_vm_load_firmware_file(erisa_vm_t* vm, char* filename) {
+    if(access(filename, R_OK) != 0) {
+        return -1;
+    }
+
+    struct stat file_stat = { 0 };
+    if(stat(filename, &file_stat) != 0) {
+        return -2;
+    }
+
+    if(vm->memory_size < (size_t) file_stat.st_size) return -3;
+
+    FILE* firmware_file = fopen(filename, "rb");
+    if(firmware_file == NULL) return -4;
+
+    memset(vm->memory, 0, vm->memory_size); // Clear memory first
+
+    size_t bytes_read = fread(vm->memory, file_stat.st_size, 1, firmware_file);
+    
+    fclose(firmware_file);
+    
+    if(bytes_read != 1) {
+        return -5;
+    }
+
+    return (size_t) file_stat.st_size;
 }

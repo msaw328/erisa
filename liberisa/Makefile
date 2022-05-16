@@ -7,7 +7,7 @@ BUILD_DIR := $(BUILD_DIR_ROOT)/liberisa
 all: $(BUILD_DIR)/liberisa.so
 
 # Source files
-SRC := encoding.c execution.c vm.c
+SRC := encoding.c execution.c disasm.c vm.c
 
 # Generated source files
 GEN_SRC := isa.h
@@ -25,7 +25,7 @@ include $(DEP)
 # Each dependency file is generated from the source file
 $(BUILD_DIR)/%.d: src/%.c $(GEN_SRC)
 	@echo -e "[DEP] $(subst $(BUILD_DIR)/,,$@)"
-	@$(CC) -MM -MT $(patsubst src/%.c,$(BUILD_DIR)/%.o, $<) $< > $@
+	@$(CC) $(CFLAGS) -MM -MT $(patsubst src/%.c,$(BUILD_DIR)/%.o, $<) $< > $@
 
 $(BUILD_DIR)/%.o: src/%.c
 	@echo -e "[CC] $(subst $(BUILD_DIR)/,,$@)"
