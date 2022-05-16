@@ -109,7 +109,7 @@ size_t __disasm_jmpabs(erisa_ins_t* ins, char* str_buff, size_t buff_size) {
     str_buff[len] = ' ';
     len += 1;
 
-    len += __imm_to_string(ins->operands[INS_OPERAND_STI_IMM], str_buff + len);
+    len += __imm_to_string(ins->operands[INS_OPERAND_JMPABS_ADDR], str_buff + len);
 
     str_buff[len + 0] = ';';
     str_buff[len + 1] = '\0';
