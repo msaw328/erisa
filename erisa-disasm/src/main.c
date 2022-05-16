@@ -47,7 +47,7 @@ void print_line(size_t offset, uint8_t* bytecode, size_t bytecode_len, char* dis
             printf("   ");
         }
     }
-    printf("\t%s\n", disassembly);
+    printf("\t\t%s\n", disassembly);
 }
 
 int main(int argc, char** argv) {
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
 
     size_t firmware_size = (size_t) status;
 
-    printf("Succesfully read %s (%zu bytes)\n", argv[1], firmware_size);
+    printf("Succesfully read %s (%zu bytes)\n\n\n", argv[1], firmware_size);
 
     erisa_ins_t ins = { 0 };
     char disasm_buffer[ERISA_DISASM_BUFFER_LEN] = { 0 };
