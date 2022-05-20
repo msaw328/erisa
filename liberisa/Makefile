@@ -4,8 +4,6 @@
 # BUILD_DIR_ROOT from top level make
 BUILD_DIR := $(BUILD_DIR_ROOT)/liberisa
 
-CFLAGS := -fPIC $(CFLAGS)
-
 all: $(BUILD_DIR)/liberisa.so
 
 # Source files

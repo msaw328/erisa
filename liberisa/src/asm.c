@@ -160,7 +160,7 @@ struct __tokens_to_ins_mapping {
     int operand_types[MAX_TOKENS_PER_STATEMENT - 1];
     int operand_idx[MAX_TOKENS_PER_STATEMENT - 1]; // indices where the operands go in the ins_t struct
 };
-struct __tokens_to_ins_mapping __ins_map[] = {
+static struct __tokens_to_ins_mapping __ins_map[] = {
     {
         .mnemonic = INS_STR_NOP,
         .ins_id = INS_ID_NOP,
