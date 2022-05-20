@@ -41,6 +41,11 @@ void erisa_decode(uint8_t* decode_buffer, erisa_ins_t* result);
 // Returns 0 if buffer too short, or number of bytes written to the buffer otherwise
 size_t erisa_disasm(erisa_ins_t* ins, char* str_buff, size_t buff_size);
 
+// Convert next statement (up until ; read from input of length up to length bytes) into an erisa_ins_t structure
+// Returns number of bytes read from input in case of success, -1 on expected end of input
+// Or other negative values on errors
+ssize_t erisa_asm(char* input, size_t length, erisa_ins_t* ins);
+
 //
 // Instruction execution (VM)
 //

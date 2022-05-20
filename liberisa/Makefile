@@ -4,10 +4,12 @@
 # BUILD_DIR_ROOT from top level make
 BUILD_DIR := $(BUILD_DIR_ROOT)/liberisa
 
+CFLAGS := -fPIC $(CFLAGS)
+
 all: $(BUILD_DIR)/liberisa.so
 
 # Source files
-SRC := encoding.c execution.c disasm.c vm.c
+SRC := decode.c execute.c asm.c disasm.c vm.c
 
 # Generated source files
 GEN_SRC := isa.h
