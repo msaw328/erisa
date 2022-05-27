@@ -29,8 +29,8 @@ size_t __imm_to_string(uint32_t reg_id, char* str_buff) {
 // jmpabs + ' ' + imm + ';'
 #define INS_JMPABS_MAX_STR_LEN (strlen(INS_STR_JMPABS) + 1 + IMM_MAX_STR_LEN + 1)
 
-// sti + ' ' + reg + ', ' + imm + ';'
-#define INS_STI_MAX_STR_LEN (strlen(INS_STR_STI) + 1 + REG_MAX_STR_LEN + 2 + IMM_MAX_STR_LEN + 1)
+// sti + ' ' + reg + ' ' + imm + ';'
+#define INS_STI_MAX_STR_LEN (strlen(INS_STR_STI) + 1 + REG_MAX_STR_LEN + 1 + IMM_MAX_STR_LEN + 1)
 
 // push + ' ' + reg + ';'
 #define INS_PUSH_MAX_STR_LEN (strlen(INS_STR_PUSH) + 1 + REG_MAX_STR_LEN + 1)
@@ -38,14 +38,14 @@ size_t __imm_to_string(uint32_t reg_id, char* str_buff) {
 // pop + ' ' + reg + ';'
 #define INS_POP_MAX_STR_LEN (strlen(INS_STR_POP) + 1 + REG_MAX_STR_LEN + 1)
 
-// mov + ' ' + reg + ', ' + reg + ';'
-#define INS_MOV_MAX_STR_LEN (strlen(INS_STR_MOV) + 1 + REG_MAX_STR_LEN + 2 + REG_MAX_STR_LEN + 1)
+// mov + ' ' + reg + ' ' + reg + ';'
+#define INS_MOV_MAX_STR_LEN (strlen(INS_STR_MOV) + 1 + REG_MAX_STR_LEN + 1 + REG_MAX_STR_LEN + 1)
 
-// add + ' ' + reg + ', ' + reg + ';'
-#define INS_ADD_MAX_STR_LEN (strlen(INS_STR_ADD) + 1 + REG_MAX_STR_LEN + 2 + REG_MAX_STR_LEN + 1)
+// add + ' ' + reg + ' ' + reg + ';'
+#define INS_ADD_MAX_STR_LEN (strlen(INS_STR_ADD) + 1 + REG_MAX_STR_LEN + 1 + REG_MAX_STR_LEN + 1)
 
-// xor + ' ' + reg + ', ' + reg + ';'
-#define INS_XOR_MAX_STR_LEN (strlen(INS_STR_XOR) + 1 + REG_MAX_STR_LEN + 2 + REG_MAX_STR_LEN + 1)
+// xor + ' ' + reg + ' ' + reg + ';'
+#define INS_XOR_MAX_STR_LEN (strlen(INS_STR_XOR) + 1 + REG_MAX_STR_LEN + 1 + REG_MAX_STR_LEN + 1)
 
 size_t __disasm_invalid(erisa_ins_t* ins, char* str_buff, size_t buff_size) {
     if(INS_INVALID_MAX_STR_LEN + 1 > buff_size) return INS_INVALID_MAX_STR_LEN + 1;
@@ -71,10 +71,9 @@ size_t __disasm_sti(erisa_ins_t* ins, char* str_buff, size_t buff_size) {
     size_t part_len = __reg_id_to_string(ins->operands[INS_OPERAND_STI_DST], str_buff + len); // Append register
     len += part_len;
 
-    str_buff[len + 0] = ',';
-    str_buff[len + 1] = ' ';
+    str_buff[len + 0] = ' ';
 
-    len += 2;
+    len += 1;
 
     part_len = __imm_to_string(ins->operands[INS_OPERAND_STI_IMM], str_buff + len); // Append immediate
     len += part_len;
@@ -168,10 +167,9 @@ size_t __disasm_mov(erisa_ins_t* ins, char* str_buff, size_t buff_size) {
 
     len += __reg_id_to_string(ins->operands[INS_OPERAND_MOV_DST], str_buff + len);
 
-    str_buff[len + 0] = ',';
-    str_buff[len + 1] = ' ';
+    str_buff[len + 0] = ' ';
 
-    len += 2;
+    len += 1;
 
     len += __reg_id_to_string(ins->operands[INS_OPERAND_MOV_SRC], str_buff + len);
 
@@ -194,10 +192,9 @@ size_t __disasm_xor(erisa_ins_t* ins, char* str_buff, size_t buff_size) {
 
     len += __reg_id_to_string(ins->operands[INS_OPERAND_XOR_DST], str_buff + len);
 
-    str_buff[len + 0] = ',';
-    str_buff[len + 1] = ' ';
+    str_buff[len + 0] = ' ';
 
-    len += 2;
+    len += 1;
 
     len += __reg_id_to_string(ins->operands[INS_OPERAND_XOR_SRC], str_buff + len);
 
@@ -220,10 +217,9 @@ size_t __disasm_add(erisa_ins_t* ins, char* str_buff, size_t buff_size) {
 
     len += __reg_id_to_string(ins->operands[INS_OPERAND_ADD_DST], str_buff + len);
 
-    str_buff[len + 0] = ',';
-    str_buff[len + 1] = ' ';
+    str_buff[len + 0] = ' ';
 
-    len += 2;
+    len += 1;
 
     len += __reg_id_to_string(ins->operands[INS_OPERAND_ADD_SRC], str_buff + len);
 

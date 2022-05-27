@@ -1,0 +1,18 @@
+@my_label
+    mov %gpr1 %gpr9;
+    xor %gpr2 %gpr2;
+    sti %gpr5 $0x10;
+    jmpabs @my_other_label;
+
+@my_label_in_the_middle
+    add %gpr8 %gpr15;
+    jmpabs @my_label;
+
+@my_other_label
+    nop;
+    nop;
+    nop;
+    mov %gpr1 %gpr9;
+    sti %gpr5 $0x123;
+    push %gpr5;
+    jmpabs @my_label_in_the_middle;

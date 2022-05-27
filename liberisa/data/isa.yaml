@@ -7,8 +7,6 @@
 
 NOP:
   description: "No Operation"
-  example_bytes: "[0x90]"
-  example_disasm: "nop;"
   op: 0x90
   mask: 0xff
   length: 1
@@ -16,8 +14,6 @@ NOP:
 
 JMPABS:
   description: "Jump to Absolute address"
-  example_bytes: "[0x91, 0x06, 0x00, 0x00, 0x00]"
-  example_disasm: "jmpabs $0x6;"
   op: 0x91
   mask: 0xff
   length: 5
@@ -25,8 +21,6 @@ JMPABS:
 
 PUSH:
   description: "Push"
-  example_bytes: "[0x54]"
-  example_disasm: "push %gpr4;"
   op: 0x50
   mask: 0xf0
   length: 1
@@ -34,8 +28,6 @@ PUSH:
 
 POP:
   description: "Pop"
-  example_bytes: "[0x64]"
-  example_disasm: "pop %gpr4;"
   op: 0x60
   mask: 0xf0
   length: 1
@@ -43,8 +35,6 @@ POP:
 
 STI:
   description: "Store Immediate"
-  example_bytes: "[0x72, 0xff, 0x00, 0x00, 0xdd]"
-  example_disasm: "sti %gpr2, $0xdd0000ff;"
   op: 0x70
   mask: 0xf0
   length: 5
@@ -52,8 +42,6 @@ STI:
 
 MOV:
   description: "Move from Register to Register"
-  example_bytes: "[0xc0, 0x17]"
-  example_disasm: "mov %gpr1, %gpr7;"
   op: 0xc0
   mask: 0xff
   length: 2
@@ -61,8 +49,6 @@ MOV:
 
 XOR:
   description: "Calculate XOR of dst and src, store result in dst"
-  example_bytes: "[0xa0, 0x17]"
-  example_disasm: "xor %gpr1, %gpr7;"
   op: 0xa0
   mask: 0xff
   length: 2
@@ -70,8 +56,6 @@ XOR:
 
 ADD:
   description: "Add src to dst and store in dst (with carry)"
-  example_bytes: "[0xa1, 0x17]"
-  example_disasm: "add %gpr1, %gpr7;"
   op: 0xa1
   mask: 0xff
   length: 2

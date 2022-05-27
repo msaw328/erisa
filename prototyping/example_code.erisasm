@@ -1,5 +1,0 @@
-nop;
-nop; nop;
-mov %gpr1 %gpr9;
-sti %gpr5 $0x10;
-push %gpr5;
